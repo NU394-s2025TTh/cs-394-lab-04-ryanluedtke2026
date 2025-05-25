@@ -1,7 +1,7 @@
 // src/components/NoteList.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 
-// TODO: import { subscribeToNotes } from '../services/noteService';
+import { subscribeToNotes } from '../services/noteService';
 import { Note, Notes } from '../types/Note';
 import NoteItem from './NoteItem';
 
@@ -14,16 +14,43 @@ const NoteList: React.FC<NoteListProps> = ({ onEditNote }) => {
   // TODO: handle unsubscribing from the notes when the component unmounts
   // TODO: manage state for notes, loading status, and error message
   // TODO: display a loading message while notes are being loaded; error message if there is an error
+  const [notes, setNotes] = React.useState<Notes>({});
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  // Notes is a constant in this template but needs to be a state variable in your implementation and load from firestore
-  const notes: Notes = {
-    '1': {
-      id: '1',
-      title: 'Note 1',
-      content: 'This is the content of note 1.',
-      lastUpdated: Date.now() - 100000,
-    },
-  };
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const unsubscribe = subscribeToNotes(
+        (newNotes: Notes) => {
+          setNotes(newNotes);
+          setLoading(false);
+        },
+        (err: Error) => {
+          console.error('error loading notes:', err);
+          setError('Failed to load notes.');
+          setLoading(false);
+        },
+      );
+
+      return () => {
+        unsubscribe();
+      };
+    } catch (err) {
+      console.error('subscription error', err);
+      setError('Failed to load notes.');
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) {
+    return <p>Loading notes...</p>;
+  }
+  if (error) {
+    return <p>Error loading notes: {error}</p>;
+  }
 
   return (
     <div className="note-list">
