@@ -80,7 +80,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ initialNote, onSave }) => {
       }
     } catch (err) {
       console.error('Error saving note:', err);
-      setError('Failed to save note.');
+      setError('Failed to save note');
     } finally {
       setIsSaving(false);
     }
@@ -125,7 +125,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ initialNote, onSave }) => {
       </div>
       {error && (
         <p role="alert" style={{ color: 'red' }}>
-          Failed to save note.
+          {error}
         </p>
       )}
     </form>

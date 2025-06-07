@@ -22,15 +22,12 @@ const NoteItem: React.FC<NoteItemProps> = ({ note, onEdit }) => {
     const confirmed = window.confirm(`Delete "${note.title}"?`);
     if (!confirmed) return;
 
-    setIsDeleting(true);
-    setError(null);
-
     try {
+      setIsDeleting(true);
       await deleteNote(note.id);
     } catch (err) {
       console.error('Delete error:', err);
       setError('Failed to delete note.');
-    } finally {
       setIsDeleting(false);
     }
   };
